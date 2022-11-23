@@ -33,31 +33,36 @@ app.get('/', (req, res) => {
     res.render('index');
 })
 
-app.get('/artist-search', (req, res) => {
+app.get("/artist-search", (req, res) => {
     spotifyApi
-        .searchArtists(req.params.id)
-        .then(data => {
-            res.render('artist-search-results', {artists: data.body.artists.items});
-            console.log('The received data from the API: ', data.body);
-        })
-        .catch(err => console.log('The error while searching artists occurred: ', err));
-})
-app.get('/artist/:id', (req, res, next) => {
+      .searchArtists(req.query.search)
+      .then((data) => {
+        console.log(data.body.artists.items);
+        res.render("artist-search-results", { artists: data.body.artists.items });
+      })
+      .catch((error) => console.log("An error occured:", error));
+  });
+
+  app.get("/albums/:id", (req, res) => {
     spotifyApi
-        .searchArtistAlbums(req.params.id)
-        .then(data => {
-            res.render('albums', {albums: data.body.items});
-            console.log('The received data from the API: ', data.body);
-        })
-        .catch(err => console.log('The error while searching artist ids occurred: ', err));
-})
-app.get('/album/tracks/:id', (req, res, next) => {
+      .getArtistAlbums(req.params.id)
+      .then((data) => {
+        res.render("albums", { albums: data.body.items });
+        console.log(data.body);
+      })
+      .catch((error) => console.log("An error occured:", error));
+  });
+  
+  app.get("/albums/tracks/:id", (req, res) => {
     spotifyApi
-        .searchArtists(req.params.id, {limit: 5, offset: 1})
-        .then(data => {
-            res.render('tracks', {tracks: data.body.items});
-            console.log('The received data from the API: ', data.body);
-        })
-        .catch(err => console.log('The error while searching tracks by id occurred: ', err));
-})
-app.listen(3000, () => console.log('My Spotify project running on port 3000 🎧 🥁 🎸 🔊'));
+      .getAlbumTracks(req.params.id, { limit: 5, offset: 1 })
+      .then((data) => {
+        res.render("tracks", { tracks: data.body.items });
+        console.log(data.body);
+      })
+      .catch((error) => console.log("An error occured:", error));
+  });
+  
+  app.listen(3000, () =>
+    console.log("My Spotify project running on port 3000 🎧 🥁 🎸 🔊")
+  );
